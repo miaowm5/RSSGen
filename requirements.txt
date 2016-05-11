@@ -1,0 +1,2 @@
+leancloud-sdk
+beautifulsoup4
