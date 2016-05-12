@@ -15,4 +15,6 @@ def clear_old_feed():
     for e in Query(Feed).find():
         time = datetime.datetime(*(e.get('time').timetuple()[0:6]))
         day = (datetime.datetime.now() - time).days
-        if day > 1: print('delete old feed:%s(%s)' % e.get('title'), time)
+        if day > 1:
+            print('delete old feed:%s(%s)' % (e.get('title').encode('utf-8'), time))
+            e.destroy()
