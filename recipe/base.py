@@ -1,29 +1,36 @@
 # !/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import urllib, urllib2, datetime
+import urllib, urllib2
+from datetime import datetime, timedelta
 from lib import feedparser
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment
 
 class Base(object):
 
     name = 'Feed Name'
     url = 'Detect URL'
+    capture = {}
+    capture["catch"] = []
+    capture["remove"] = []
+    capture["nav"] = ''
+    oldest = 2
 
     def __init__(self, info):
         self.info = info
 
     def featch_url(self, url):
         headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'}
-        result = urllib2.urlopen(urllib2.Request(url=url,headers=headers))
-        if result.getcode() == 200: return result.read()
-        else:
-            print('Featch URL Fail(%s): %s' % url, result.getcode())
-            return None
+        try:
+            result = urllib2.urlopen(urllib2.Request(url=url,headers=headers))
+            if result.getcode() == 200: return result.read()
+            else: error = result.getcode()
+        except Exception as e: error = str(e)
+        print('Featch URL Fail(%s): %s' % url, error)
+        return None
 
     def featch_content(self, url):
         content = self.featch_url(url)
-        if content: content = content.decode("utf-8")
         return content
 
     def spider_main(self, detect = None, capture = set()):
@@ -56,22 +63,72 @@ class Base(object):
         # return detect_url, set([capture_url])[, add_detect_to_result]
         if html is None: return None, set()
         capture = set()
+        if self.capture.get('nav', None):
+            soup = BeautifulSoup(html, "lxml")
+            nav = soup.select(self.capture["nav"])
+            for e in nav:
+                page_url = e["href"]
+                if (page_url != url): capture.add(page_url)
         return None, capture
 
+    def spider_generate_html(self, result):
+        content = u''
+        for html, url in result:
+            try:
+                if not html: continue
+                soup = self.process_article(html)
+                content += unicode(soup.html.body)
+            except Exception as e:
+                print('Creat html fail(%s):%s' % (url, str(e)))
+                content += '<p>*** This Page Get Fail ***</p><a href="%s">Link</a>' % url
+        return content
+
     def convert_time(self, time):
-        return datetime.datetime(*(time[0:6]))
+        return datetime(*(time[0:6]))
 
     def get_last_check(self):
+        oldest_days = datetime.now() - timedelta(days=self.oldest)
+        oldest_days = self.convert_time(oldest_days.timetuple())
         last_check = self.info.get('check')
-        return self.convert_time(last_check.timetuple())
+        if last_check is None: return oldest_days
+        else: last_check = self.convert_time(last_check.timetuple())
+        if (last_check - oldest_days).days > 0: return last_check
+        else: return oldest_days
 
     def refresh_last_check(self, time):
         self.info.set('check', time)
+
+    def process_article(self, content):
+        if isinstance(content,(str)): soup = BeautifulSoup(content,'lxml')
+        else: soup = content
+        if self.capture["catch"]:
+            body = soup.new_tag('body')
+            for spec in self.capture["catch"]:
+                tags = [tag for tag in soup.select(spec)]
+                for tag in tags: body.append(tag)
+            soup.find('body').replace_with(body)
+        remove = ['script','object','video',
+            'embed','noscript','style','link','#controlbar_container']
+        remove += self.capture["remove"]
+        for spec in remove:
+            tags = [tag for tag in soup.select(spec)]
+            for tag in tags: tag.decompose()
+        remove_attrs = ['width','height','onerror','onclick','onload','style','id','class',
+            'title','alt','align']
+        for attr in remove_attrs:
+            for tag in soup.find_all(attrs={attr:True}): del tag[attr]
+        for cmt in soup.find_all(text=lambda text:isinstance(text, Comment)):
+            cmt.extract()
+        for x in soup.find_all(['article', 'aside', 'header', 'footer', 'nav',
+            'figcaption', 'figure', 'section', 'time', 'textarea']):
+            x.name = 'div'
+        return soup
 
     def get_item(self):
         # yield title, time, link, content
         pass
 
+# 定义了 Feed 需要的相关方法，用于将非全文 RSS 转换为全文 RSS 的类
 class Feed(Base):
 
     def get_feed_time(self,e):
@@ -84,7 +141,7 @@ class Feed(Base):
 
     def get_item(self):
         # yield title, time, link, content
-        content = self.featch_url(self.url)
+        content = self.featch_content(self.url)
         if not content: return
         content = feedparser.parse(content)
         last_check = self.get_last_check()
@@ -92,9 +149,9 @@ class Feed(Base):
         if last_update and last_check >= last_update:
             print '%s has no update after last spider' % self.name
             return
-        for title, time, link, describe in self.create_item(content['entries']):
+        for title, time, link, content in self.create_item(content['entries']):
             if last_check >= time: break
-            yield title, time, link, describe
+            yield title, time, link, content
         self.refresh_last_check(last_update)
 
     def create_item(self, feed):
@@ -102,5 +159,10 @@ class Feed(Base):
             title = e.title
             link = e.link
             time = self.get_feed_time(e)
-            describe = title
+            describe = self.create_content(link)
             yield title, time, link, describe
+
+    def create_content(self, url):
+        result = self.spider_main(detect=url, capture=set([url]))
+        content = self.spider_generate_html(result)
+        return content
