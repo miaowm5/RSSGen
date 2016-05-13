@@ -8,6 +8,7 @@ from lib import PyRSS2Gen
 import recipe
 
 Feed = Object.extend('FeedItem')
+TestFeed = Object.extend('TestFeedItem')
 FeedInfo = Object.extend('FeedInfo')
 
 def get_info(name):
@@ -24,19 +25,32 @@ def save_data(data):
     try: data.save()
     except LeanCloudError, e: print e
 
-def save():
+def set_feed_data(item, name, data):
+    item.set('name', name)
+    item.set('title', data[0])
+    item.set('time', data[1])
+    item.set('link', data[2])
+    item.set('content', data[3])
+    save_data(item)
+
+def save(feed_name=None):
     for r in rss_list():
         name = r.name
+        if feed_name and feed_name != name: continue
+        try:
+            info = get_info(name)
+            rss = r(info=info)
+            for data in rss.get_item(): set_feed_data(Feed(), name, data)
+            save_data(info)
+        except Exception as e: print('save %s fail : %s' % (name, str(e)))
+
+def test_save(feed_name=None):
+    for r in rss_list():
+        name = r.name
+        if feed_name and feed_name != name: continue
         info = get_info(name)
         rss = r(info=info)
-        for title, time, link, content in rss.get_item():
-            item = Feed()
-            item.set('name', name)
-            item.set('title', title)
-            item.set('time', time)
-            item.set('link', link)
-            item.set('content', content)
-            save_data(item)
+        for data in rss.get_item(): set_feed_data(TestFeed(), name, data)
         save_data(info)
 
 def rss_list():
@@ -68,7 +82,7 @@ def clear():
         feed.reverse()
         for e in feed:
             time = datetime(*(e.get('time').timetuple()[0:6]))
-            if (oldest - time).days > 0: remove.append(e)
+            if oldest > time: remove.append(e)
             else: break
         for e in remove:
             print('delete old feed: %s (%s)' % (e.get('title').encode('utf-8'), e.get('time')))
