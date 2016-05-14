@@ -76,7 +76,7 @@ def show(name):
 def clear():
     for r in rss_list():
         name = r.name
-        oldest = datetime.now() - timedelta(days=r.oldest)
+        oldest = datetime.utcnow() - timedelta(days=r.oldest)
         remove = []
         feed = get_all_feed(name)
         feed.reverse()

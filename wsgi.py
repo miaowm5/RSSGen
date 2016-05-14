@@ -50,3 +50,7 @@ def clear_old_feed(): cloud.clear_old_feed()
 @app.route('/test/work')
 def test_work():
     return cloud.spider_work()
+
+@app.route('/test/work/<recipe>')
+def test_work(recipe):
+    return spider.save(recipe)
