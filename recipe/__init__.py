@@ -4,6 +4,7 @@
 import os
 
 recipe_list = []
+hide_list = []
 
 for file in os.listdir(os.path.dirname(__file__)):
     if not file.endswith('.py'): continue
@@ -12,4 +13,5 @@ for file in os.listdir(os.path.dirname(__file__)):
     try:
         recipe = __import__("recipe." + name, fromlist='*')
         recipe_list.append(recipe.recipe)
+        if name.endswith("hide"): hide_list.append(recipe.recipe)
     except Exception as e: print("%s import failed : %s" % (name, e))

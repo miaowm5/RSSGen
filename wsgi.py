@@ -53,4 +53,4 @@ def test_work():
 
 @app.route('/test/work/<recipe>')
 def test_work(recipe):
-    return spider.save(recipe)
+    return spider.force_save(recipe)

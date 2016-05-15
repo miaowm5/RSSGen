@@ -26,6 +26,7 @@ def save_data(data):
     except LeanCloudError, e: print e
 
 def set_feed_data(item, name, data):
+    item = item()
     item.set('name', name)
     item.set('title', data[0])
     item.set('time', data[1])
@@ -33,28 +34,33 @@ def set_feed_data(item, name, data):
     item.set('content', data[3])
     save_data(item)
 
-def save(feed_name=None):
+def save_rss(name, recipe, item):
+    info = get_info(name)
+    rss = recipe(info=info)
+    for data in rss.get_item(): set_feed_data(item, name, data)
+    save_data(info)
+
+def save():
     for r in rss_list():
+        try: save_rss(r.name,r,Feed)
+        except Exception as e: print('save %s fail : %s' % (r.name, str(e)))
+
+def force_save(feed_name=None):
+    for r in rss_list(all_feed=True):
         name = r.name
         if feed_name and feed_name != name: continue
-        try:
-            info = get_info(name)
-            rss = r(info=info)
-            for data in rss.get_item(): set_feed_data(Feed(), name, data)
-            save_data(info)
-        except Exception as e: print('save %s fail : %s' % (name, str(e)))
+        try: save_rss(r.name,r,Feed)
+        except Exception as e: print('save %s fail : %s' % (r.name, str(e)))
 
 def test_save(feed_name=None):
-    for r in rss_list():
+    for r in rss_list(all_feed=True):
         name = r.name
         if feed_name and feed_name != name: continue
-        info = get_info(name)
-        rss = r(info=info)
-        for data in rss.get_item(): set_feed_data(TestFeed(), name, data)
-        save_data(info)
+        save_rss(name,r,TestFeed)
 
-def rss_list():
-    return recipe.recipe_list
+def rss_list(all_feed=False):
+    if all_feed: return set(recipe.recipe_list)
+    else: return (set(recipe.recipe_list) ^ set(recipe.hide_list))
 
 def get_all_feed(name):
     query = Query(Feed)
@@ -66,8 +72,10 @@ def show(name):
     for e in get_all_feed(name):
         title = e.get('title')
         time = e.get('time')
+        time = datetime(*(time.utctimetuple()[0:6]))
         link = e.get('link')
         content = e.get('content')
+
         item = PyRSS2Gen.RSSItem(title=title,pubDate=time,
           link=link,description=content)
         rss.items.append(item)
@@ -76,7 +84,7 @@ def show(name):
 def clear():
     for r in rss_list():
         name = r.name
-        oldest = datetime.utcnow() - timedelta(days=r.oldest)
+        oldest = datetime.now() - timedelta(days=r.oldest)
         remove = []
         feed = get_all_feed(name)
         feed.reverse()

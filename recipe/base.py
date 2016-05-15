@@ -2,8 +2,14 @@
 # -*- coding:utf-8 -*-
 
 import urllib, urllib2
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, tzinfo
 from bs4 import BeautifulSoup, Comment
+
+class UTC(tzinfo):
+    def __init__(self,offset = 0): self._offset = offset
+    def utcoffset(self, dt): return timedelta(hours=self._offset)
+    def tzname(self, dt): return "UTC +%s" % self._offset
+    def dst(self, dt): return timedelta(hours=self._offset)
 
 class Base(object):
 
@@ -89,14 +95,13 @@ class Base(object):
         return content
 
     def convert_time(self, time):
-        return datetime(*(time[0:6]))
+        return datetime(*(time[0:6]),tzinfo=UTC(0))
 
     def get_last_check(self):
         oldest_days = datetime.utcnow() - timedelta(days=self.oldest)
         oldest_days = self.convert_time(oldest_days.timetuple())
         last_check = self.info.get('check')
         if last_check is None: return oldest_days
-        else: last_check = self.convert_time(last_check.timetuple())
         if last_check > oldest_days: return last_check
         else: return oldest_days
 
