@@ -75,7 +75,6 @@ def show(name):
         time = datetime(*(time.utctimetuple()[0:6]))
         link = e.get('link')
         content = e.get('content')
-
         item = PyRSS2Gen.RSSItem(title=title,pubDate=time,
           link=link,description=content)
         rss.items.append(item)
@@ -86,12 +85,8 @@ def clear():
         name = r.name
         oldest = datetime.now() - timedelta(days=r.oldest)
         remove = []
-        feed = get_all_feed(name)
-        feed.reverse()
-        for e in feed:
-            time = datetime(*(e.get('time').timetuple()[0:6]))
-            if oldest > time: remove.append(e)
-            else: break
-        for e in remove:
+        query = Query(Feed)
+        query.equal_to('name', name).less_than("time", oldest)
+        for e in query.find():
             print('delete old feed: %s (%s)' % (e.get('title').encode('utf-8'), e.get('time')))
             e.destroy()

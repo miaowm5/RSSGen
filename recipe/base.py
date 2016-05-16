@@ -88,7 +88,7 @@ class Base(object):
             try:
                 if not html: continue
                 soup = self.process_article(html)
-                content += unicode(soup.html.body)
+                content += unicode(soup.html.body.next)
             except Exception as e:
                 print('Creat html fail(%s):%s' % (url, str(e)))
                 content += '<p>*** This Page Get Fail ***</p><a href="%s">Link</a>' % url
@@ -130,8 +130,9 @@ class Base(object):
         for cmt in soup.find_all(text=lambda text:isinstance(text, Comment)):
             cmt.extract()
         for x in soup.find_all(['article', 'aside', 'header', 'footer', 'nav',
-            'figcaption', 'figure', 'section', 'time', 'textarea']):
+            'figcaption', 'figure', 'section', 'time']):
             x.name = 'div'
+        for x in soup.find_all(['textarea']): x.name = 'pre'
         return soup
 
     def get_item(self):

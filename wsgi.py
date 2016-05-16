@@ -24,6 +24,10 @@ def show_rss_list():
 def show_rss(name):
     return spider.show(name)
 
+@app.route('/rss/save/<recipe>')
+def save_rss(recipe):
+    return spider.force_save(recipe)
+
 @app.route('/list')
 def show_list():
     return bottle.template('list', items=lists.get())
@@ -50,7 +54,3 @@ def clear_old_feed(): cloud.clear_old_feed()
 @app.route('/test/work')
 def test_work():
     return cloud.spider_work()
-
-@app.route('/test/work/<recipe>')
-def test_work(recipe):
-    return spider.force_save(recipe)

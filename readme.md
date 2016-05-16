@@ -8,26 +8,30 @@ RSSGen 是一个使用 Python 语言编写并运行于 Leancloud 平台的简单
 * 抓取网页生成 RSS
 * 新建和删除一个书签列表，用于将 Kindle 中的 RSS 文章在电脑中打开（[与该的 Fork 版 KindleEar 的分享文章功能搭配使用](https://github.com/miaowm5/KindleEar/blob/master/books/m5_base.py)）
 
-## 部署
+## 部署到 Leancloud
 
 注册 [Leancloud](https://leancloud.cn/) 账号，并创建一个应用
 
 下载 RSSGen ，用记事本打开目录下的 auth.py ，填入刚刚创建的应用的 ID ，应用 ID 可以在 Leancloud 对应应用 后台 - 设置 中查看
 
-将应用上传到 Leancloud ，具体的步骤可以参考 [Leancloud文档](https://leancloud.cn/docs/leanengine_guide-python.html#使用命令行工具部署) ，这里推荐使用 CSDN Code 部署应用
-
-_实际上，如果不担心安全问题的话可以直接 Fork 本项目之后在 Github 上通过网页端修改 auth.py 的内容并直接部署_
+将应用上传到 Leancloud ，具体的步骤可以参考 [Leancloud文档](https://leancloud.cn/docs/leanengine_guide-python.html#使用命令行工具部署) ，推荐使用 CSDN Code 部署应用
 
 在 Leancloud 应用 后台 - 存储 - 云引擎 - 定时任务 中，添加爬虫任务
 
-| 函数名称           | Cron表达式       | 说明                |
-| -------------- | ------------- | ----------------- |
-| clear_old_feed | 0 0 0 * * ?   | 每天 0 点删除一天前的旧 RSS |
-| spider_work    | 0 0 0/6 * * ? | 每隔六小时抓取一次网站的更新    |
+| 函数名称           | Cron表达式         | 说明              |
+| -------------- | --------------- | --------------- |
+| clear_old_feed | 0 0,5 0 * * ?   | 每天凌晨删除一天前的旧 RSS |
+| spider_work    | 0 0,5 0/6 * * ? | 每隔六小时抓取一次网站的更新  |
 
 在 Leancloud 应用 后台 - 存储 - 云引擎 - 设置 中，设置应用的域名
 
 打开上一步设置的主机域名（假设为 rssgen.leanapp.cn），若显示 It works，则表示部署成功
+
+## 部署到 Heroku
+
+设置好 auth.py 的应用可以直接上传到 Heroku 平台，应用拥有除了定时任务外网页版全部的功能，所有的数据仍然保存在 leancloud 中，部署到 Heroku 主要用于抓取墙外网页的更新生成 RSS
+
+推荐使用 Dropbox 方式部署应用
 
 ## 功能
 
@@ -35,7 +39,7 @@ _假设主机域名为 rssgen.leanapp.cn_
 
 ### 设置 RSS 抓取规则
 
-recipe 目录下的每个 py 文件对应一个 rss，以 base 结尾的类为公共库会自动忽略，必要时可以在提供相同接口的前提下重写全部代码，以下是必须实现的接口：
+recipe 目录下的每个 py 文件对应一个 rss，文件名以 base 结尾的类为公共库会自动忽略，文件名以 hide 结尾的类不会自动抓取，必要时可以在提供相同接口的前提下重写全部代码，以下是必须实现的接口：
 
 | 名称       | 类型       | 说明                                       |
 | -------- | -------- | ---------------------------------------- |
@@ -72,6 +76,10 @@ recipe 目录下的每个 py 文件对应一个 rss，以 base 结尾的类为�
 ### 查看正在抓取的 RSS
 
 打开网址 rssgen.leanapp.cn/rss 即可查看所有规则成功导入并开始自动抓取的 RSS
+
+### 立刻抓取 RSS
+
+打开网址 rssgen.leanapp.cn/rss/save/recipe名称 可以立刻抓取指定 name 的 recipe 更新，该功能可用于在 Heroku APP 上抓取墙外内容（一般对应的 recipe 文件的文件名末尾可以加上 hide 来阻止定时任务自动抓取时的时间浪费）
 
 ### 在 Kindle 上保存网页网址到电脑端
 
