@@ -88,7 +88,7 @@ class Base(object):
             try:
                 if not html: continue
                 soup = self.process_article(html)
-                content += unicode(soup.html.body.next)
+                content += unicode(soup.body)
             except Exception as e:
                 print('Creat html fail(%s):%s' % (url, str(e)))
                 content += '<p>*** This Page Get Fail ***</p><a href="%s">Link</a>' % url
@@ -123,17 +123,21 @@ class Base(object):
         for spec in remove:
             tags = [tag for tag in soup.select(spec)]
             for tag in tags: tag.decompose()
-        remove_attrs = ['width','height','onerror','onclick','onload','style','id','class',
-            'title','alt','align']
-        for attr in remove_attrs:
-            for tag in soup.find_all(attrs={attr:True}): del tag[attr]
         for cmt in soup.find_all(text=lambda text:isinstance(text, Comment)):
             cmt.extract()
         for x in soup.find_all(['article', 'aside', 'header', 'footer', 'nav',
             'figcaption', 'figure', 'section', 'time']):
             x.name = 'div'
         for x in soup.find_all(['textarea']): x.name = 'pre'
+        for img in soup.find_all('img'): self.process_image(img)
+        remove_attrs = ['width','height','onerror','onclick','onload','style','id','class',
+            'title','alt','align','border','itemprop']
+        for attr in remove_attrs:
+            for tag in soup.find_all(attrs={attr:True}): del tag[attr]
         return soup
+
+    def process_image(self, img):
+        pass
 
     def get_item(self):
         # yield title, time, link, content

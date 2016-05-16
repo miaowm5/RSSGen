@@ -12,7 +12,7 @@ class Feed(Base):
     def spider_get_post_href(self, soup):
         yield 'href'
     def spider_process_html(self, soup):
-        html = unicode(soup.html.body.next)
+        html = unicode(soup.body)
         return html
 
     def spider_generate_html(self, result):
