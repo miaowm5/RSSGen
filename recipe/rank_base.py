@@ -32,14 +32,16 @@ class Feed(Base):
         return None, capture
 
     def current_time(self):
-        t = datetime.utcnow()
+        t = datetime.now()
         return datetime(t.year, t.month, t.day, 0, 0, 0, tzinfo=UTC(0))
 
     def get_item(self):
         # yield title, time, link, content
         time = self.current_time()
         last_check = self.get_last_check()
-        if last_check >= time: return
+        if last_check >= time:
+            print '%s has captured today' % self.name
+            return
         result = self.spider_main(detect = self.url)
         for html, url in self.spider_generate_html(result):
             yield self.name, time, url, html

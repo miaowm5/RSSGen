@@ -29,7 +29,7 @@ RSSGen 是一个使用 Python 语言编写并运行于 Leancloud 平台的简单
 
 ## 部署到 Heroku
 
-设置好 auth.py 的应用可以直接上传到 Heroku 平台，应用拥有除了定时任务外网页版全部的功能，所有的数据仍然保存在 leancloud 中，部署到 Heroku 主要用于抓取墙外网页的更新生成 RSS
+设置好 auth.py 的应用可以直接上传到 Heroku 平台，Heroku 版拥有除了定时任务外网页版全部的功能，所有的数据仍然保存在 leancloud 中，部署到 Heroku 主要用于抓取墙外网页的更新生成 RSS
 
 推荐使用 Dropbox 方式部署应用
 
@@ -44,14 +44,14 @@ recipe 目录下的每个 py 文件对应一个 rss，文件名以 base 结尾�
 | 名称       | 类型       | 说明                                       |
 | -------- | -------- | ---------------------------------------- |
 | recipe   | 全局变量     | 该变量需要赋值为一个抓取规则的类，爬虫工作时会传递一个 info 参数对该类进行实例化 |
-| info     | 规则类的类变量  | 纪录了服务器端所保存的抓取信息的对象，防止重复抓取同一内容            |
-| name     | 规则类的类变量  | 用于区分不同规则的标识符，服务器端也将以该名字保存数据              |
-| oldest   | 规则类的类变量  | 要保留的时间最早的文章，用于服务端自动清理过旧内容                |
+| info     | 规则类的属性   | 纪录了服务器端所保存的抓取信息的对象，防止重复抓取同一内容            |
+| name     | 规则类的属性   | 用于区分不同规则的标识符，服务器端也将以该名字保存数据              |
+| oldest   | 规则类的属性   | 要保留的时间最早的文章，用于服务端自动清理过旧内容                |
 | get_item | 规则类的实例方法 | yield 元祖，每个元祖内容为 (标题,时间,网址,内容)           |
 
 默认的 base.py 中定义了以下方法和接口可以直接继承使用。sample_recipe 目录中放着一些基于 base.py 的范例 recipe 可供参考。
 
-类变量
+属性
 
 | 名称                | 类型    | 说明                                   |
 | ----------------- | ----- | ------------------------------------ |
@@ -68,10 +68,10 @@ recipe 目录下的每个 py 文件对应一个 rss，文件名以 base 结尾�
 | spider_main            | 探测网址字符串,抓取网址 set  | 依次抓取 set 中的网页内容，返回由元祖(抓取网址,抓取内容)组成的 list |
 | spider_refresh_capture | 探测网址字符串,探测网址内容    | spider_main 每次抓取结束后调用，用来抓取分页文章等，返回值将作为下一轮 spider_main 的参数使用 |
 | spider_generate_html   | spider_main 的抓取结果 | 用于将 spider_main 抓取结果拼接成一个单独的 html 页面     |
-| convert_time           | datetime          | 将所有 datetime 统一转换为 UTC0 的 datetime，已经包含时区时不会自动转换 |
+| convert_time           | datetime          | 将所有 datetime 统一转换为 UTC0 的 datetime，已经包含时区时原有的时区信息将被忽略 |
 | get_last_check         | 无                 | 获取服务端数据最后的抓取时间（UTC8）                     |
-| refresh_last_check     | datetime          | 时间作为最后抓取时间保存到服务端                         |
-| process_article        | 网页内容              | 根据类变量 capture 的设置自动清理文章内容                |
+| refresh_last_check     | datetime          | 将指定时间作为最后抓取时间保存到服务端                      |
+| process_article        | 网页内容              | 根据 capture 属性的设置自动清理文章内容                 |
 
 ### 查看正在抓取的 RSS
 
@@ -85,7 +85,7 @@ recipe 目录下的每个 py 文件对应一个 rss，文件名以 base 结尾�
 
 访问网页 rssgen.leanapp.cn/list/save?url=12345&title=54321 可以将网址 12345 以标题 54231 保存
 
-_一般来说，该网址是由 KindleEar 或其他第三方程序自动生成的_
+_一般来说，该网址是由 KindleEar 或其他第三方程序自动生成的，网址仅使用 urllib.quote 进行一层包装_
 
 ### 查看保存的网址
 
