@@ -23,7 +23,7 @@
     </script>
     <script>
       (function (){
-        $('.delete').click(function(){
+        $('.handle').click(function(){
           $('#remove').attr('src', $(this).attr('data-url'))
           $(this).parent().hide()
         })

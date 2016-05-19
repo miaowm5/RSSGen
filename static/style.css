@@ -12,6 +12,7 @@
   padding: 1em;
   border-radius: 10px;
   margin: .5em 0;
+  line-height: 1.5;
 }
 .list>div:nth-child(2n+0){
   background: #EEE;

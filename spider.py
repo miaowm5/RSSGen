@@ -23,7 +23,7 @@ def get_info(name):
 
 def save_data(data):
     try: data.save()
-    except LeanCloudError, e: print e
+    except LeanCloudError, e: print "Save feed error: %s" % str(e)
 
 def set_feed_data(item, name, data):
     item = item()
@@ -37,8 +37,13 @@ def set_feed_data(item, name, data):
 def save_rss(name, recipe, item):
     info = get_info(name)
     rss = recipe(info=info)
-    for data in rss.get_item(): set_feed_data(item, name, data)
-    save_data(info)
+    print('Spider %s' % name)
+    count = 0
+    for data in rss.get_item():
+        count += 1
+        set_feed_data(item, name, data)
+    print('Spider over, add %s new feed' % count)
+    if count > 0: save_data(info)
 
 def save():
     for r in rss_list():
