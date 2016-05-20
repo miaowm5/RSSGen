@@ -1,9 +1,9 @@
+body{ font-size: 16px; }
 #container{
   margin: 3em auto;
   max-width: 960px;
   border: 1px solid #999;
   border-radius: 10px;
-  font-size: 16px;
 }
 .list{
   padding: 2em;
@@ -17,7 +17,6 @@
 .list>div:nth-child(2n+0){
   background: #EEE;
 }
-
 .list a{
   text-decoration: none;
 }
@@ -33,7 +32,7 @@
 .handle:before{
   content: ' - ';
 }
-@media screen and (max-width:700px){
-  #container{ font-size: 13px; }
+@media (max-width:700px){
+  body{ font-size: 12px; }
   .list{ padding: .5em; }
 }
