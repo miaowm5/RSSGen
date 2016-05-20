@@ -20,6 +20,7 @@ class Base(object):
     capture["remove"] = []
     capture["nav"] = ''
     oldest = 2
+    log = []
 
     def __init__(self, info):
         self.info = info
@@ -142,3 +143,7 @@ class Base(object):
     def get_item(self):
         # yield title, time, link, content
         pass
+
+    def add_log(self, name, value):
+        data = (name, value)
+        self.log.append(data)

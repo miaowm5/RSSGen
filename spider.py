@@ -10,6 +10,7 @@ import recipe
 Feed = Object.extend('FeedItem')
 TestFeed = Object.extend('TestFeedItem')
 FeedInfo = Object.extend('FeedInfo')
+DebugLog = Object.extend('DebugLog')
 
 def get_info(name):
     query = Query(FeedInfo).equal_to('name', name)
@@ -44,6 +45,11 @@ def save_rss(name, recipe, item):
         set_feed_data(item, name, data)
     print('Spider over, add %s new feed' % count)
     if count > 0: save_data(info)
+    for key,value in rss.log:
+        log = DebugLog()
+        log.set('name', name)
+        log.set(str(key), value)
+        save_data(log)
 
 def save():
     for r in rss_list():
