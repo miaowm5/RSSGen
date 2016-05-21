@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import urllib, urllib2
+import requests
 from datetime import datetime, timedelta, tzinfo
 from bs4 import BeautifulSoup, Comment
 
@@ -34,9 +34,9 @@ class Base(object):
     def featch_url(self, url):
         headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'}
         try:
-            result = urllib2.urlopen(urllib2.Request(url=url,headers=headers))
-            if result.getcode() == 200: return result.read()
-            else: error = result.getcode()
+            r = requests.get(url, headers=headers)
+            if r.status_code == 200: return r.text
+            else: error = r.status_code
         except Exception as e: error = str(e)
         print('Featch URL Fail(%s): %s' % (url, error))
         return None
@@ -111,6 +111,7 @@ class Base(object):
 
     def process_article(self, content):
         if isinstance(content,(str)): soup = BeautifulSoup(content,'lxml')
+        elif isinstance(content,(unicode)): soup = BeautifulSoup(content,'lxml')
         else: soup = content
         if self.capture["catch"]:
             body = soup.new_tag('body')
