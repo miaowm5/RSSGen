@@ -20,7 +20,6 @@ class Base(object):
     capture["remove"] = []
     capture["nav"] = ''
     oldest = 2
-    log = []
 
     def __init__(self, info):
         self.info = info
@@ -30,6 +29,7 @@ class Base(object):
         default_capture["nav"] = ''
         default_capture.update(self.capture)
         self.capture = default_capture
+        self.log = []
 
     def featch_url(self, url):
         headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'}
@@ -143,6 +143,8 @@ class Base(object):
     def get_item(self):
         # yield title, time, link, content
         pass
+
+    def log(self): return self.log
 
     def add_log(self, name, value):
         data = (name, value)
