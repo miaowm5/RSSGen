@@ -45,11 +45,11 @@ def save_rss(name, recipe, item):
         set_feed_data(item, name, data)
     print('Spider over, add %s new feed' % count)
     if count > 0: save_data(info)
-    for key,value in rss.log:
-        log = DebugLog()
-        log.set('name', name)
-        log.set(str(key), value)
-        save_data(log)
+    if len(rss.log) == 0: return
+    log = DebugLog()
+    log.set('name', name)
+    for key,value in rss.log: log.set(str(key), value)
+    save_data(log)
 
 def save():
     for r in rss_list():
