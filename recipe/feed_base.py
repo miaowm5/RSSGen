@@ -7,6 +7,9 @@ from lib import feedparser
 # 定义了 Feed 需要的相关方法，用于将非全文 RSS 转换为全文 RSS 的类
 class Feed(Base):
 
+    def get_last_update(self, content):
+        return self.get_feed_time(content.feed)
+
     def get_feed_time(self,e):
         update = None
         if hasattr(e, 'published_parsed') and e.published_parsed: update = e.published_parsed
@@ -21,11 +24,12 @@ class Feed(Base):
         if not content: return
         content = feedparser.parse(content)
         last_check = self.get_last_check()
-        last_update = self.get_feed_time(content.feed)
+        last_update = self.get_last_update(content)
         if last_update and last_check >= last_update:
             print '%s has no update after last spider' % self.name
             return
         for title, time, link, content in self.create_item(content['entries']):
+            if not last_update: last_update = time
             if last_check >= time: break
             yield title, time, link, content
         self.refresh_last_check(last_update)
