@@ -18,15 +18,23 @@ def static(filename):
 @app.route('/rss')
 def show_rss_list():
     rss = [a.name for a in spider.rss_list()]
-    return bottle.template('rss_list', rss=rss)
+    orss = spider.online_rss_list()
+    return bottle.template('rss_list', rss=rss, orss=orss)
 
 @app.route('/rss/<name>')
 def show_rss(name):
     return spider.show(name)
 
-@app.route('/rss/save/<recipe>')
-def save_rss(recipe):
-    return spider.force_save(recipe)
+@app.route('/rss/save')
+def save_rss():
+    recipe = bottle.request.query.recipe
+    if bottle.request.query.type == 'rss': spider.save(all_feed=True, feed_name=recipe)
+    else: spider.save_online(feed_name="ol-%s" % recipe)
+    return 'save over'
+
+@app.post('/rss/delete')
+def delete_rss():
+    spider.remove_online_feed(feed_name=bottle.request.params.recipe)
 
 @app.route('/list')
 def show_list():
@@ -39,9 +47,9 @@ def add_list():
     lists.save(url, title)
     return 'Url add to list!'
 
-@app.route('/list/delete')
+@app.post('/list/delete')
 def delete_list():
-    return lists.delete(bottle.request.query.id)
+    lists.delete(bottle.request.params.id)
 
 application = leancloud.Engine(app)
 

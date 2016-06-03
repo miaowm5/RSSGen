@@ -5,6 +5,7 @@ from base import Base
 from lib import feedparser
 
 # 定义了 Feed 需要的相关方法，用于将非全文 RSS 转换为全文 RSS 的类
+
 class Feed(Base):
 
     def get_last_update(self, content):
@@ -46,3 +47,12 @@ class Feed(Base):
         result = self.spider_main(detect=url, capture=set([url]))
         content = self.spider_generate_html(result)
         return content
+
+    def set_online_recipe(self, data):
+        self.url = data[0]
+        self.capture["catch"] = data[1]
+        self.capture["remove"] = data[2]
+        self.capture["nav"] = data[3]
+        self.oldest = data[4]
+
+recipe = Feed

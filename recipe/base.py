@@ -19,6 +19,7 @@ class Base(object):
     capture["catch"] = []
     capture["remove"] = []
     capture["nav"] = ''
+    capture["block_img"] = []
     oldest = 2
 
     def __init__(self, info):
@@ -27,6 +28,7 @@ class Base(object):
         default_capture["catch"] = []
         default_capture["remove"] = []
         default_capture["nav"] = ''
+        default_capture["block_img"] = []
         default_capture.update(self.capture)
         self.capture = default_capture
         self.log = []
@@ -35,10 +37,13 @@ class Base(object):
         headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'}
         try:
             r = requests.get(url, headers=headers)
-            if r.status_code == 200: return r.text
+            if r.status_code == 200:
+                r.encoding = 'utf-8'
+                return r.text
             else: error = r.status_code
         except Exception as e: error = str(e)
         print('Featch URL Fail(%s): %s' % (url, error))
+        self.add_log('fail_url',url)
         return None
 
     def featch_content(self, url):
@@ -110,8 +115,8 @@ class Base(object):
         self.info.set('check', time)
 
     def process_article(self, content):
-        if isinstance(content,(str)): soup = BeautifulSoup(content,'lxml')
-        elif isinstance(content,(unicode)): soup = BeautifulSoup(content,'lxml')
+        if isinstance(content,(str)): soup = BeautifulSoup(content,'lxml', from_encoding="utf8")
+        elif isinstance(content,(unicode)): soup = BeautifulSoup(content,'lxml', from_encoding="utf8")
         else: soup = content
         if self.capture["catch"]:
             body = soup.new_tag('body')
@@ -139,7 +144,10 @@ class Base(object):
         return soup
 
     def process_image(self, img):
-        pass
+        url = img['src'] if 'src' in img.attrs else None
+        if not url: return
+        for key_word in self.capture["block_img"]:
+            if key_word in url: return img.decompose()
 
     def get_item(self):
         # yield title, time, link, content
@@ -150,3 +158,5 @@ class Base(object):
     def add_log(self, name, value):
         data = (name, value)
         self.log.append(data)
+
+recipe = Base

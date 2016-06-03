@@ -9,12 +9,11 @@
   </head>
   <body>
     <div id="container">
-      <img src="" style="display:none" id='remove'>
       <div class="list">
         % for item in items:
           <div>
             <a class="link" target="_blank" href="{{item[0]}}">{{item[1]}}</a>
-            <p class="handle" data-url="list/delete?id={{item[2]}}">删除</p>
+            <p class="handle" data-id="{{item[2]}}">删除</p>
           </div>
         % end
       </div>
@@ -26,7 +25,7 @@
     <script>
       (function (){
         $('.handle').click(function(){
-          $('#remove').attr('src', $(this).attr('data-url'))
+          $.post('list/delete', {id: $(this).attr('data-id')})
           $(this).parent().hide()
         })
       })()

@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import urlparse
 
 # 定义了网页抓取相关的方法，专门用于将一个排行榜类的网页转换为 Feed
+
 class Feed(Base):
 
     oldest = 1
@@ -48,3 +49,5 @@ class Feed(Base):
         for html, url in self.spider_generate_html(result):
             yield self.name, time, url, html
         self.refresh_last_check(time)
+
+recipe = Feed
