@@ -94,7 +94,9 @@ def show(name):
         item = PyRSS2Gen.RSSItem(title=title,pubDate=time,
           link=link,description=content)
         rss.items.append(item)
-    return rss.to_xml(encoding='utf-8')
+    r = rss.to_xml(encoding='utf-8')
+    return r.replace('<rss version="2.0">',
+        '<?xml-stylesheet type="text/xsl" href="../static/xml_style.xsl" ?><rss version="2.0">')
 
 def clear():
     for r in rss_list(all_feed=True): clear_feed(r.name, r.oldest)

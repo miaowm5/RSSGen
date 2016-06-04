@@ -23,6 +23,7 @@ def show_rss_list():
 
 @app.route('/rss/<name>')
 def show_rss(name):
+    bottle.response.content_type = 'application/xml; charset=utf-8'
     return spider.show(name)
 
 @app.route('/rss/save')
