@@ -6,6 +6,8 @@
   <html>
     <head>
       <title><xsl:value-of select="title" /> - RSSGen</title>
+      <meta name="viewport" content="width=device-width, user-scalable=no" />
+      <link rel="shortcut icon" href="../static/favicon.ico" />
       <style>
         body{
             font-size: 14px;

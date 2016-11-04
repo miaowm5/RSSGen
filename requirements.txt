@@ -1,4 +1,7 @@
 leancloud-sdk
+bottle
 beautifulsoup4
 lxml
 requests
+feedparser
+PyRSS2Gen

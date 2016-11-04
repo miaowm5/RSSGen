@@ -1,10 +1,9 @@
 # !/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import leancloud, auth
+import leancloud, auth, PyRSS2Gen
 from datetime import datetime, timedelta
 from leancloud import Object, Query, LeanCloudError
-from lib import PyRSS2Gen
 import recipe
 
 Feed = Object.extend('FeedItem')
@@ -76,12 +75,21 @@ def save_online(feed_name=None):
         except Exception as e: print('save %s fail : %s' % (r.name, str(e)))
 
 def online_rss_list():
-    return [a.get('name') for a in Query(OnlineFeed).find()]
+    try: return [a.get('name') for a in Query(OnlineFeed).find()]
+    except LeanCloudError, e:
+        if e.code == 101: return []
+        else: raise(e)
+    return []
 
 def get_all_feed(name):
-    query = Query(Feed)
-    query.equal_to('name', name).descending("time")
-    return query.find()
+    try:
+        query = Query(Feed)
+        query.equal_to('name', name).descending("time")
+        return query.find()
+    except LeanCloudError, e:
+        if e.code == 101: return []
+        else: raise(e)
+    return []
 
 def show(name):
     rss = PyRSS2Gen.RSS2(title=name,link="https://github.com/miaowm5",description="RSSGen By Miaowm5")

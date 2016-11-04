@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 from base import Base
-from lib import feedparser
+import feedparser
 
 # 定义了 Feed 需要的相关方法，用于将非全文 RSS 转换为全文 RSS 的类
 

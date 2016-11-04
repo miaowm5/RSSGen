@@ -1,8 +1,7 @@
 # !/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import leancloud, auth
-from lib import bottle
+import leancloud, auth, bottle
 import spider, lists, cloud
 
 app = bottle.Bottle()
