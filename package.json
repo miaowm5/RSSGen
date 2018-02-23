@@ -1,0 +1,33 @@
+{
+  "name": "rssgennew",
+  "version": "1.0.0",
+  "description": "spider website and generate rss",
+  "main": "index.js",
+  "scripts": {
+    "start": "node main.js",
+    "prepublish": "node init.js",
+    "deploy": "lean.exe deploy",
+    "test": "node test.js"
+  },
+  "engines": {
+    "node": "8.x"
+  },
+  "author": "miaowm5",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "feed": "^1.1.1",
+    "he": "^1.1.1",
+    "koa": "^2.4.1",
+    "koa-route": "^3.2.0",
+    "koa-router": "^7.4.0",
+    "koa-static": "^4.0.2",
+    "leancloud-storage": "^3.6.0",
+    "leanengine": "^3.0.2",
+    "qr-image": "^3.2.0",
+    "r2": "^2.0.0",
+    "rss-parser": "^3.1.1",
+    "xtemplate": "^4.6.1",
+    "xtpl": "^3.4.0"
+  }
+}

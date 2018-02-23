@@ -1,0 +1,6 @@
+config.json
+lean.exe
+.leancloud
+.vscode
+node_modules
+sample

@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>RSS List</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <link rel="shortcut icon" href="./favicon.ico">
+    <link rel="stylesheet" href="style/common.css">
+  </head>
+  <body>
+    <div id="container">
+      <div class="list">
+        {{#each(list)}}
+          <div>
+            <a class="link" target="_blank" href="rss/{{this[0]}}">{{this[1]}}</a>
+            <a class="handle" target="_blank" href="rss?type=save&recipe={{this[0]}}">立刻更新</a>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  </body>
+</html>

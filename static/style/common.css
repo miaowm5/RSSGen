@@ -1,0 +1,38 @@
+body{ font-size: 16px; }
+#container{
+  margin: 3em auto;
+  max-width: 960px;
+  border: 1px solid #999;
+  border-radius: 10px;
+}
+.list{
+  padding: 2em;
+}
+.list>div{
+  padding: 1em;
+  border-radius: 10px;
+  margin: .5em 0;
+  line-height: 1.5;
+}
+.list>div:nth-child(2n+0){
+  background: #EEE;
+}
+.list a{
+  text-decoration: none;
+}
+.list .link{
+  color: #333;
+  font-size: 1.5em;
+}
+.handle{
+  cursor: pointer;
+  display: inline;
+  color: #999;
+}
+.handle:before{
+  content: ' - ';
+}
+@media (max-width:700px){
+  body{ font-size: 12px; }
+  .list{ padding: .5em; }
+}
