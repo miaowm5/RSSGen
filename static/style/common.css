@@ -5,6 +5,9 @@ body{ font-size: 16px; }
   border: 1px solid #999;
   border-radius: 10px;
 }
+.content{
+  padding: 2em;
+}
 .list{
   padding: 2em;
 }
@@ -32,7 +35,18 @@ body{ font-size: 16px; }
 .handle:before{
   content: ' - ';
 }
+.button{
+  cursor: pointer;
+  border: 1px solid #666;
+  border-radius: 5px;
+  display: inline;
+  padding: .5em 1.5em;
+}
+.button:hover{
+  opacity: .8;
+}
 @media (max-width:700px){
   body{ font-size: 12px; }
   .list{ padding: .5em; }
+  .content{ padding: .5em; }
 }

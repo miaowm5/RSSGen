@@ -3,6 +3,7 @@ const Router = require('koa-router')
 const router = new Router()
 const qr = require('qr-image')
 const spider = require('./spider.js')
+const bookmark = require('./bookmark.js')
 const tpl = (path, data)=>{
   const xtpl = require('xtpl')
   return new Promise((s,r)=>{
@@ -17,7 +18,9 @@ router.get('/qr', (ctx)=>{
   let query = ctx.request.query
   if (query.url){
     ctx.response.type = 'image/png'
-    ctx.response.body = qr.imageSync(decodeURI(query.url))
+    ctx.response.body = qr.imageSync(
+      `${ctx.protocol}://${ctx.host}/bookmark?type=url&url=${query.url}`
+    )
   }
 })
 router.get('/rss', async (ctx)=>{
@@ -26,7 +29,7 @@ router.get('/rss', async (ctx)=>{
   if (query.type == 'save'){
     if (list.includes(query.recipe)){
       spider.run(query.recipe)
-      ctx.response.body = '正在后台更新中...'
+      ctx.response.body = 'Spider start...'
       return
     }
   }
@@ -40,6 +43,26 @@ router.get('/rss', async (ctx)=>{
 router.get('/rss/:title', async (ctx)=>{
   ctx.response.type = 'text/xml'
   ctx.response.body = await spider.show(ctx.params.title, `${ctx.protocol}://${ctx.host}`)
+})
+router.get('/bookmark', async (ctx)=>{
+  let query = ctx.request.query
+  if (query.type == 'add'){ if (query.url){
+    await bookmark.add(query.url, query.title)
+    ctx.response.body = 'Save bookmark...'
+    return
+  }}
+  else if (query.type == 'del'){ if (query.id){
+    await bookmark.del(query.id)
+    ctx.response.body = 'Delete bookmark...'
+    return
+  }}
+  else if (query.type == 'url'){ if (query.url){
+    ctx.response.body = await tpl('bookmark',
+      {type:'url', title: query.title || 'Untitled', url: query.url})
+    return
+  }}
+  let list = await bookmark.get()
+  ctx.response.body = await tpl('bookmark', {type:'list', list})
 })
 
 module.exports = (app)=>{

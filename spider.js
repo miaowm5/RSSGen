@@ -105,12 +105,12 @@ class Spider{
     let item = (new AV.Query('FeedItem')).equalTo('name', name).descending('time')
     item = await item.find()
     item.forEach((item)=>{
+      let title = item.get('title')
       let link = item.get('link')
       let content = item.get('content')
-      content += `<img src="${url}/qr?url=${encodeURI(link)}"></img>`
+      content += `<img src="${url}/qr?url=${encodeURI(link)}&title=${encodeURI(title)}"></img>`
       feed.addItem({
-        title: item.get('title'),
-        link, content, description: content,
+        title, link, content, description: content,
         date: item.get('time'),
       })
     })
@@ -121,15 +121,3 @@ class Spider{
 }
 
 module.exports = new Spider()
-
-const testSpider = ()=>{
-  try{
-    let s = new Spider()
-    s.run().then((r)=>console.log(r))
-  }catch(e){
-    console.error(e)
-  }
-}
-
-// testSpider()
-

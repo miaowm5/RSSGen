@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Bookmark</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <link rel="shortcut icon" href="./favicon.ico">
+    <link rel="stylesheet" href="style/common.css">
+  </head>
+  <body>
+    <div id="container">
+      {{#if( type==='url' )}}
+        <div class="content">
+          <div style="margin-top: -1em" />
+          <h1>{{title}}</h1>
+          <div style="margin-top: 2.5em" />
+          <div class="button" id="origin">访问网页</div>
+          <div class="button" id="bookmark">添加书签</div>
+          <div style="margin-bottom: 1em" />
+        </div>
+      {{/if}}
+      {{#if( type==='list' )}}
+        <div class="list">
+          {{#each(list)}}
+            <div>
+              <a class="link" target="_blank" href="{{this[0]}}">{{this[1]}}</a>
+              <p class="handle" data-id="{{this[2]}}">删除</p>
+            </div>
+          {{/each}}
+        </div>
+      {{/if}}
+    </div>
+
+    <script src="//cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript">!window.jQuery && document.write('<script src="lib/jquery.js"><\/script>')</script>
+    <script>(function (){
+      {{#if (type==='url')}}
+        $('#origin').click(function(){ window.location = '{{url}}' })
+        $('#bookmark').click(function(){
+          $.get('bookmark?type=add&url='+encodeURI('{{url}}')+'&title='+encodeURI('{{title}}'))
+          $(this).hide()
+        })
+      {{/if}}
+      {{#if (type==='list')}}
+        $('.handle').click(function(){
+          $.get('bookmark?type=del&id='+$(this).attr('data-id'))
+          $(this).parent().hide()
+        })
+      {{/if}}
+    })()</script>
+  </body>
+</html>
