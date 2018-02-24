@@ -9,7 +9,7 @@ let app = new Koa()
 app.use(AV.koa())
 app = route(app)
 
-AV.Cloud.define('spider', spider.run)
-AV.Cloud.define('clear', spider.clear)
+AV.Cloud.define('spider', ()=>{ return spider.run() })
+AV.Cloud.define('clear', ()=>{ return spider.clear() })
 
 app.listen(engine.port)
