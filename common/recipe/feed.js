@@ -13,7 +13,7 @@ class Feed extends Base{
     return {title, link, content}
   }
   async getFeed(){
-    let rss = await urlGet(this.url, {allowError: true})
+    let rss = await urlGet(this.url, {allowError: true, encode: this.encode})
     if (!rss){ return [] }
     try{
       let parser = new Parser()

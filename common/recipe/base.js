@@ -15,6 +15,7 @@ class Base{
   init(){
     this.name = 'Feed Name'
     this.url = 'Detect URL'
+    this.encode = null
     this.capture = {
       catch: [], remove: [],
       nav: [], blockImg: [], oldest: 2
@@ -68,6 +69,11 @@ class Base{
     if (!time) time = new Date()
     this.info.set('lastCheck', time)
   }
+  getLastFlag(){ return this.info.get('lastFlag') || 'null' }
+  setLastFlag(value=null){
+    if (!value) return
+    this.info.set('lastFlag', value)
+  }
   spiderCheckNav(html, detectUrl){
     if (!html) return [[], null]
     if (this.capture.nav.length == 0) return [[], null]
@@ -113,7 +119,7 @@ class Base{
     }
     let task = refreshTask(capture, detect)
     while (task.length > 0){
-      let promise = task.map((url)=>{ return urlGet(url, {allowError: true}) })
+      let promise = task.map((url)=>{ return urlGet(url, {allowError: true, encode: self.encode}) })
       promise = Promise.all(promise)
       let page = await promise
       page.forEach((html,i)=>{

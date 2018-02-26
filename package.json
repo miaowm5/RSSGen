@@ -25,8 +25,9 @@
     "leancloud-storage": "^3.6.0",
     "leanengine": "^3.0.2",
     "qr-image": "^3.2.0",
-    "r2": "^2.0.0",
     "rss-parser": "^3.1.1",
+    "superagent": "^3.8.2",
+    "superagent-charset": "^1.2.0",
     "xtemplate": "^4.6.1",
     "xtpl": "^3.4.0"
   }
