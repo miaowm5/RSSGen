@@ -22,18 +22,24 @@ class Spider{
     return info
   }
   async save(item){
-    try{ await item.save() }
+    try{
+      if (Array.isArray(item)){ await AV.Object.saveAll(item) }
+      else{ await item.save() }
+    }
     catch(e){
       console.error(`Meet error when save item`)
       console.error(e)
     }
   }
-  async run(name=null){
+  async wait(time){ return new Promise((s,r)=>{ setTimeout(s, time) }) }
+  async run(list=null){
     console.log('Spider start')
     let self = this
-    let list = [name]
-    if (!name){ list = await this.getList() }
-    list = list.map(async (name)=>{
+    if (list){ if (!Array.isArray(list)){ list = [list] } }
+    else{ list = await this.getList() }
+    console.log(`Recipe List:${list.join(', ')}` )
+    list = list.map(async (name, index)=>{
+      await self.wait(index*500)
       let info = await self.getInfo(name)
       let recipe = require('./recipe/'+name)
       recipe = new recipe(info)
@@ -45,36 +51,38 @@ class Spider{
         feed = []
       }
       if (feed.length > 0){
-        feed = feed.map(async (feed)=>{
+        feed = feed.map((feed)=>{
           let item = new Data['FeedItem']()
           item.set('name', name)
           item.set('title', feed.title)
           item.set('time', feed.date)
           item.set('link', feed.link)
           item.set('content', feed.content)
-          await self.save(item)
+          return item
         })
-        await Promise.all(feed)
+        await self.save(feed)
         await self.save(info)
-        console.log(`Spider ${name}, find ${feed.length} new feed`)
       }
-      let log = recipe.log.map(async (log)=>{
+      console.log(`Spider ${name}, find ${feed.length} new feed`)
+      let log = recipe.log.map((log)=>{
         let item = new Data['Log']()
         item.set('name', name)
         item.set('type', log.type)
         item.set('info', log.info)
-        self.save(item)
+        return item
       })
-      await Promise.all(log)
+      await self.save(log)
     })
     await Promise.all(list)
     console.log('Spider over')
   }
   async clear(){
     console.log('clear old data')
+    let self = this
     const feed = async ()=>{
       let list = await this.getList()
-      list = list.map(async (name)=>{
+      list = list.map(async (name, index)=>{
+        await self.wait(index*500)
         let recipe = require('./recipe/'+name)
         recipe = new recipe()
         let oldest = new Date()

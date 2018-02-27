@@ -104,6 +104,7 @@ class Base{
     })
     return content
   }
+  async wait(time){ return new Promise((s,r)=>{ setTimeout(s, time) }) }
   async spiderMain(capture=[], detect = null){
     let self = this
     let result = []
@@ -119,15 +120,14 @@ class Base{
     }
     let task = refreshTask(capture, detect)
     while (task.length > 0){
-      let promise = task.map((url)=>{ return urlGet(url, {allowError: true, encode: self.encode}) })
-      promise = Promise.all(promise)
-      let page = await promise
-      page.forEach((html,i)=>{
-        let url = task[i]
+      task = task.map(async (url, index)=>{
+        await self.wait(index*500)
+        let html = urlGet(url, {allowError: true, encode: self.encode})
         cache[url] = html
         if (html){ if (capture.includes(url)){ result.push({url, html}) } }
         else{ console.log(`Fetch URL failed, skip(${url})`) }
       })
+      await Promise.all(task)
       task = []
       if (detect){
         [capture, detect] = self.spiderCheckNav(cache[detect], detect)

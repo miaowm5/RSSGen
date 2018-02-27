@@ -26,18 +26,12 @@ class Feed extends Base{
     let self = this
     let lastCheck = this.getLastCheck()
     let pubDate = new Date(new Date(new Date().toLocaleDateString()).getTime())
-    if (lastCheck > pubDate){
-      console.log(`${this.name} has captured today`)
-      return []
-    }
+    if (lastCheck > pubDate){ return [] }
     let html = await urlGet(this.url, {allowError: true, encode: this.encode})
     if (!html){ return [] }
     let $ = cheerio.load(html)
     let flag = this.rankCapture.flag($)
-    if (this.getLastFlag() == flag){
-      console.log(`${this.name} has no update after last spider`)
-      return []
-    }
+    if (this.getLastFlag() == flag){ return [] }
     this.setLastCheck()
     this.setLastFlag(flag)
     let list = this.getRankList($)

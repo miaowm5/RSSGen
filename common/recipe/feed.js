@@ -24,10 +24,7 @@ class Feed extends Base{
     }
     let lastCheck = this.getLastCheck()
     if (rss.pubDate){
-      if (lastCheck > new Date(rss.pubDate)){
-        console.log(`${this.name} has no update after last spider`)
-        return []
-      }
+      if (lastCheck > new Date(rss.pubDate)){ return [] }
     }
     this.setLastCheck()
     let result = []
@@ -40,7 +37,6 @@ class Feed extends Base{
         result.push(r)
       }
     }
-    if (result.length == 0) console.log(`${this.name} has no update after last spider`)
     return result
   }
 }
