@@ -19,7 +19,7 @@ router.get('/qr', (ctx)=>{
   if (query.url){
     ctx.response.type = 'image/png'
     ctx.response.body = qr.imageSync(
-      `${ctx.protocol}://${ctx.host}/bookmark?type=url&url=${query.url}&title=${query.title||''}`
+      encodeURI(`${ctx.protocol}://${ctx.host}/bookmark?type=url&url=${query.url}&title=${query.title||''}`)
     )
   }
 })

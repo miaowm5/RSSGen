@@ -122,7 +122,7 @@ class Base{
     while (task.length > 0){
       task = task.map(async (url, index)=>{
         await self.wait(index*500)
-        let html = urlGet(url, {allowError: true, encode: self.encode})
+        let html = await urlGet(url, {allowError: true, encode: self.encode})
         cache[url] = html
         if (html){ if (capture.includes(url)){ result.push({url, html}) } }
         else{ console.log(`Fetch URL failed, skip(${url})`) }
