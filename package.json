@@ -18,17 +18,17 @@
     "cheerio": "^1.0.0-rc.2",
     "feed": "^1.1.1",
     "he": "^1.1.1",
-    "koa": "^2.4.1",
+    "koa": "^2.5.0",
     "koa-route": "^3.2.0",
     "koa-router": "^7.4.0",
     "koa-static": "^4.0.2",
     "leancloud-storage": "^3.6.0",
-    "leanengine": "^3.0.2",
+    "leanengine": "^3.1.0",
     "qr-image": "^3.2.0",
     "rss-parser": "^3.1.1",
     "superagent": "^3.8.2",
     "superagent-charset": "^1.2.0",
-    "xtemplate": "^4.6.1",
+    "xtemplate": "^4.7.2",
     "xtpl": "^3.4.0"
   }
 }

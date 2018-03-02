@@ -23,7 +23,7 @@
         <div class="list">
           {{#each(list)}}
             <div>
-              <a class="link" target="_blank" href="{{this[0]}}">{{this[1]}}</a>
+              <a class="link" target="_blank" href="{{{this[0]}}}">{{this[1]}}</a>
               <p class="handle" data-id="{{this[2]}}">删除</p>
             </div>
           {{/each}}
@@ -35,9 +35,9 @@
     <script type="text/javascript">!window.jQuery && document.write('<script src="lib/jquery.js"><\/script>')</script>
     <script>(function (){
       {{#if (type==='url')}}
-        $('#origin').click(function(){ window.location = '{{url}}' })
+        $('#origin').click(function(){ window.location = '{{{url}}}' })
         $('#bookmark').click(function(){
-          $.get('bookmark?type=add&url='+encodeURI('{{url}}')+'&title='+encodeURI('{{title}}'))
+          $.get('bookmark?type=add&url='+encodeURIComponent('{{{url}}}')+'&title='+encodeURIComponent('{{title}}'))
           $(this).hide()
         })
       {{/if}}

@@ -116,7 +116,7 @@ class Spider{
       let title = item.get('title')
       let link = item.get('link')
       let content = item.get('content')
-      content += `<img src="${url}/qr?url=${encodeURI(link)}&title=${encodeURI(title)}"></img>`
+      content += `<img src="${url}/qr?url=${encodeURIComponent(link)}&title=${encodeURIComponent(title)}"></img>`
       feed.addItem({
         title, link, content, description: content,
         date: item.get('time'),

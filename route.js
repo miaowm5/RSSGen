@@ -18,9 +18,9 @@ router.get('/qr', (ctx)=>{
   let query = ctx.request.query
   if (query.url){
     ctx.response.type = 'image/png'
-    ctx.response.body = qr.imageSync(
-      encodeURI(`${ctx.protocol}://${ctx.host}/bookmark?type=url&url=${query.url}&title=${query.title||''}`)
-    )
+    let url = encodeURIComponent(query.url)
+    let title = encodeURIComponent(query.title||'')
+    ctx.response.body = qr.imageSync(`${ctx.protocol}://${ctx.host}/bookmark?type=url&url=${url}&title=${title}`)
   }
 })
 router.get('/rss', async (ctx)=>{
