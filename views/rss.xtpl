@@ -6,9 +6,27 @@
     <meta name="viewport" content="width=device-width, user-scalable=no" />
     <link rel="shortcut icon" href="./favicon.ico">
     <link rel="stylesheet" href="style/common.css">
+    <style>
+      .func{
+        text-align: center;
+        margin-top: .5em;
+        margin-bottom: -2.5em;
+        border-bottom: 1px solid #333;
+        padding-bottom: .5em;
+      }
+      .func a{
+        color: #333;
+        text-decoration: none;
+      }
+      @media (max-width:700px){ .list{ padding-top: 2em; } }
+    </style>
   </head>
   <body>
     <div id="container">
+      <div class="func">
+        <a target="_blank" href="rss?type=saveall">全部更新</a>
+        <a target="_blank" href="rss?type=clearall">过期清理</a>
+      </div>
       <div class="list">
         {{#each(list)}}
           <div>

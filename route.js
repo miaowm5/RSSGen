@@ -33,6 +33,14 @@ router.get('/rss', async (ctx)=>{
       return
     }
   }
+  if (query.type == 'saveall'){
+    spider.run(); ctx.response.body = 'Spider start...'
+    return
+  }
+  if (query.type == 'clearall'){
+    spider.clear(); ctx.response.body = 'Clear start...'
+    return
+  }
   list = list.map((key)=>{
     let data = require('./recipe/'+key)
     data = new data()

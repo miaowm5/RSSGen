@@ -15,6 +15,7 @@ class Spider{
       info = await query.first()
       if (!info) throw 'Info undefined'
     }catch(e){
+      console.error(e)
       info = new Data['FeedInfo']()
       info.set('name', name)
       await self.save(info)

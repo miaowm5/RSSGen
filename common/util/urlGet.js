@@ -10,6 +10,7 @@ const get = async (url, opt={})=>{
   },opt)
   let r = request.get(url)
     .set('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6')
+    .buffer(true)
   if (opt.encode){ r.charset(opt.encode) }
   try{
     let res = await r

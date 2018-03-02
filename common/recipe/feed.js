@@ -12,7 +12,15 @@ class Feed extends Base{
     let content = feed.content || feed['content:encoded'] || ''
     return {title, link, content}
   }
+  init(){
+    super.init()
+    this.feedCapture = {
+      timeCorrect: true,
+      flag: (feed)=>{ return true }
+    }
+  }
   async getFeed(){
+    let self = this
     let rss = await urlGet(this.url, {allowError: true, encode: this.encode})
     if (!rss){ return [] }
     try{
@@ -23,14 +31,20 @@ class Feed extends Base{
       return []
     }
     let lastCheck = this.getLastCheck()
-    if (rss.pubDate){
-      if (lastCheck > new Date(rss.pubDate)){ return [] }
-    }
+    let lastFlag = this.getLastFlag()
+    if (this.feedCapture.timeCorrect){ if (rss.pubDate){ if (lastCheck > new Date(rss.pubDate)){ return [] } } }
     this.setLastCheck()
     let result = []
     for (let feed of rss.items){
-      let feedDate = new Date(feed.pubDate)
-      if (feed.pubDate){ if (lastCheck > feedDate){ break } }
+      let feedDate = new Date()
+      if (self.feedCapture.timeCorrect){
+        if (feed.pubDate){
+          feedDate = new Date(feed.pubDate)
+          if (lastCheck > feedDate){ break }
+        }
+      }else{
+        if (self.feedCapture.flag(feed, lastCheck, lastFlag)){ break }
+      }
       let r = await this.parseFeed(feed)
       if (r){
         r.date = feedDate

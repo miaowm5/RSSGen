@@ -4,6 +4,7 @@ const {AV, Data} = require('./engine.js')
 
 const createDatabase = async ()=>{
   let createDatabase = async (database)=>{
+    console.log(`Create Database: ${database}`)
     let query = new AV.Query(database)
     try{ await query.find() }
     catch(e){
@@ -43,4 +44,7 @@ const init = async ()=>{
   await checkRecipe()
 }
 
+console.log('Init database')
 init()
+  .then((r)=>{ console.log(`Init over`) })
+  .catch((e)=>{ console.error(e) })
